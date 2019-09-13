@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -6,6 +6,12 @@ import {
   DialogContentText,
   DialogTitle,
   Button,
+  Step,
+  Stepper,
+  StepLabel,
+  makeStyles,
+  createStyles,
+  Container,
 } from '@material-ui/core';
 import { Formik } from 'formik';
 import { InputField } from 'ui-blocks';
@@ -13,14 +19,22 @@ import FIELDPATHS from 'validation/fieldPaths';
 import { useI18N } from 'store/ducks/language/hooks';
 import { UseIsVisibleProps } from 'hooks/useIsVisible';
 import { Musician } from '../../services/types';
-import { now } from 'moment';
+import moment, { now } from 'moment';
 import SubmitButton from '../submit-button';
 
+const useStyles = makeStyles(() =>
+  createStyles({
+    root: {
+      width: 600,
+      height: 400,
+    },
+  }),
+);
 const initialValues = {
   title: '',
   type: '',
   formation: '',
-  date: new Date(),
+  date: moment().format('DD-MM-YYYY'),
   musicians: [],
   musiciansStatus: false,
   status: 'sale',
@@ -93,18 +107,15 @@ interface Props {}
 
 const NewEventForm = ({ isVisible, toggle }: Props & UseIsVisibleProps) => {
   const [step, setStep] = useState(0);
-  const onSubmit = () => null;
+  const onSubmit = (vl: {}) => console.log(vl);
   const I18N = useI18N();
   const STEPS = useSteps();
-
-  useEffect(() => {
-    setStep(0);
-  }, []);
+  const classes = useStyles();
 
   return (
     <Dialog open={isVisible} onClose={toggle}>
       <Formik onSubmit={onSubmit} initialValues={initialValues}>
-        <>
+        <Container classes={classes}>
           <DialogTitle>{STEPS[step].title}</DialogTitle>
           <DialogContent>{STEPS[step].component}</DialogContent>
           <DialogActions>
@@ -135,7 +146,7 @@ const NewEventForm = ({ isVisible, toggle }: Props & UseIsVisibleProps) => {
               </SubmitButton>
             )}
           </DialogActions>
-        </>
+        </Container>
       </Formik>
     </Dialog>
   );
